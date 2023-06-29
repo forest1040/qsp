@@ -36,7 +36,9 @@ class QuantumState:
         qsize = 1
         for i in range(self._dim >> qsize):
             indices = self.indices_vec(i, qubits, masks)
+            # TODO: GPUメモリ上で処理したい
             values = [self.vector[i] for i in indices]
+            values = cp.asarray(values)
             new_values = matrix.dot(values)
             for (i, nv) in zip(indices, new_values):
                 self._vector[i] = nv

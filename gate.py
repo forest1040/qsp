@@ -57,7 +57,7 @@ class RXGate(OneQubitGate):
         t = self.theta * 0.5
         a = math.cos(t)
         b = -1j * math.sin(t)
-        return cp.array([[a, b], [b, a]], dtype=complex)
+        return cp.asarray([[a, b], [b, a]], dtype=complex)
 
     def update_quantum_state(self, state: QuantumState):
         state.apply(self.targets, self.matrix())
