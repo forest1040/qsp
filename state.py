@@ -3,8 +3,6 @@ from typing_extensions import TypeAlias
 
 import numpy as np
 
-from utils.array import readonly_array
-
 StateVectorType: TypeAlias = "npt.NDArray[np.cfloat]"
 
 class QuantumState:
@@ -26,7 +24,7 @@ class QuantumState:
 
     @property
     def vector(self) -> StateVectorType:
-        return readonly_array(self._vector)
+        return self._vector
 
     # TODO: just simple only single qubit and target only!
     def apply(self, targets: int, matrix):
