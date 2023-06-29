@@ -10,18 +10,16 @@ class QuantumState:
     def __init__(
         self,
         n_qubits: int,
-        vector: Optional[Union[StateVectorType, "npt.ArrayLike"]] = None,
+        batch_size: int,
     ) -> None:
         self._dim = 2**n_qubits
-        self._vector: StateVectorType
-        if vector is None:
-            self._vector = cast(StateVectorType, cp.zeros(self._dim))
-            self._vector[0] = 1.0
-        else:
-            vector = cp.asarray(vector, dtype=cp.cfloat)
-            if len(vector) != self._dim:
-                raise ValueError(f"The dimension of vector must be {self._dim}.")
-            self._vector = vector
+        self._batch_size = batch_size
+        datas = []
+        data = cast(StateVectorType, cp.zeros(self._dim))
+        data[0] = 1.0
+        for _ in range(batch_size):
+            datas.append(data.copy())
+        self._vector = cp.asarray(datas)
 
     @property
     def vector(self) -> StateVectorType:
@@ -36,12 +34,29 @@ class QuantumState:
         qsize = 1
         for i in range(self._dim >> qsize):
             indices = self.indices_vec(i, qubits, masks)
+            print("indices:", indices)
             # TODO: GPUメモリ上で処理したい
-            values = [self.vector[i] for i in indices]
+            # values = [self.vector[i] for i in indices]
+            values = []
+            for _ in range(self._batch_size):
+                v = [self.vector[ii] for ii in indices]
+                values.append(v)
+            # TODO: こんな感じの内包表記にしたい これだと1重のリストになってしまう
+            #values = [self.vector[j][ii] for ii in indices for j in range(self._batch_size)]
             values = cp.asarray(values)
+            print("values.shape:", values.shape)
+
+            # TODO: matrixの中身
+            matrixs = []
+            for _ in range(self._batch_size):
+                matrixs.append(matrix.copy())
+            matrixs = cp.asarray(matrixs)
+            print("matrixs.shape:", matrixs.shape)
+
             new_values = matrix.dot(values)
-            for (i, nv) in zip(indices, new_values):
-                self._vector[i] = nv
+            print("new_values.shape:", new_values.shape)
+            # for (i, nv) in zip(indices, new_values):
+            #     self._vector[i] = nv
 
     def mask_vec(self, qubits: Sequence[int]):
         # only 1 qubit

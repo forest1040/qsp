@@ -9,9 +9,10 @@ from gate import RXGate
 from circuit import QuantumCircuit
 
 def main():
+    BATCH_SIZE = 10
     # ============= 量子状態 =================
     n = 4
-    state = QuantumState(n)
+    state = QuantumState(n, BATCH_SIZE)
     print(state.vector)
 
     # ============= 量子ゲート ===============
@@ -27,3 +28,7 @@ def main():
     print(state.vector)
 
 main()
+
+# TODO:
+# QuantumStateは、QuantumCircuit内に持たせた方がよいかも。
+
