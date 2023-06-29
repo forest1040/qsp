@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, Optional, Union, cast, Sequence
 from typing_extensions import TypeAlias
 
-import numpy as np
+#import numpy as np
+import cupy as cp
 
-StateVectorType: TypeAlias = "npt.NDArray[np.cfloat]"
+StateVectorType: TypeAlias = "npt.NDArray[cp.cfloat]"
 
 class QuantumState:
     def __init__(
@@ -14,10 +15,10 @@ class QuantumState:
         self._dim = 2**n_qubits
         self._vector: StateVectorType
         if vector is None:
-            self._vector = cast(StateVectorType, np.zeros(self._dim))
+            self._vector = cast(StateVectorType, cp.zeros(self._dim))
             self._vector[0] = 1.0
         else:
-            vector = np.asarray(vector, dtype=np.cfloat)
+            vector = cp.asarray(vector, dtype=cp.cfloat)
             if len(vector) != self._dim:
                 raise ValueError(f"The dimension of vector must be {self._dim}.")
             self._vector = vector

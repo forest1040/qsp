@@ -1,8 +1,6 @@
 import typing
 from typing import cast, Any, Callable, Dict, Optional, Tuple, Type
 
-import numpy as np
-
 from gate import Gate
 from state import QuantumState
 

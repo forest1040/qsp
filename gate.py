@@ -2,7 +2,8 @@ import cmath
 import math
 from typing import Any, cast, Callable, Iterable, Iterator, List, NoReturn, Optional, Tuple, Type, TypeVar, Union
 
-import numpy as np
+#import numpy as np
+import cupy as cp
 
 from state import QuantumState
 
@@ -14,7 +15,7 @@ class Gate:
     def dagger(self) -> 'Gate':
         raise NotImplementedError()
 
-    def matrix(self) -> np.ndarray:
+    def matrix(self) -> cp.ndarray:
         raise NotImplementedError()
     
     def update_quantum_state(self, state: QuantumState):
@@ -56,7 +57,7 @@ class RXGate(OneQubitGate):
         t = self.theta * 0.5
         a = math.cos(t)
         b = -1j * math.sin(t)
-        return np.array([[a, b], [b, a]], dtype=complex)
+        return cp.array([[a, b], [b, a]], dtype=complex)
 
     def update_quantum_state(self, state: QuantumState):
         state.apply(self.targets, self.matrix())

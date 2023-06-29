@@ -4,8 +4,6 @@ from typing_extensions import TypeAlias
 import random
 from math import pi
 
-import numpy as np
-
 from state import QuantumState
 from gate import RXGate
 from circuit import QuantumCircuit
