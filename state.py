@@ -14,12 +14,12 @@ class QuantumState:
     ) -> None:
         self._dim = 2**n_qubits
         self._batch_size = batch_size
-        #datas = []
         data = cast(StateVectorType, cp.zeros(self._dim))
         data[0] = 1.0
-        self._vector = []
+        datas = []
         for i in range(batch_size):
-            self._vector.append(data.copy())
+            datas.append(data.copy())
+        self._vector = cp.asarray(datas)
 
     # @property
     # def vector(self) -> StateVectorType:
