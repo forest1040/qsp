@@ -2,8 +2,8 @@ import cmath
 import math
 from typing import Any, cast, Callable, Iterable, Iterator, List, NoReturn, Optional, Tuple, Type, TypeVar, Union
 
-#import numpy as np
-import cupy as cp
+import numpy as cp
+#import cupy as cp
 
 from state import QuantumState
 

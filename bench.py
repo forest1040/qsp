@@ -4,15 +4,19 @@ from typing_extensions import TypeAlias
 import random
 from math import pi
 
+import time
+
 from state import QuantumState
 from gate import RXGate
 from circuit import QuantumCircuit
 
-def main():
-    BATCH_SIZE = 1
+MAX_COUNT = 100
+DEPTH = 10
+N = 4
+
+def execute(n: int, batch_size: int):
     # ============= 量子状態 =================
-    n = 4
-    state = QuantumState(n, BATCH_SIZE)
+    state = QuantumState(n, batch_size)
     #print(state._vector)
 
     # ============= 量子ゲート ===============
@@ -23,10 +27,26 @@ def main():
 
     # ============= 量子回路 =================
     circuit = QuantumCircuit(n)
-    circuit.add_gate(rx_gate)
+    for _ in range(DEPTH):
+        for i in range(n):
+            t = random.random() * pi
+            rx_gate = RXGate(i, t)
+            circuit.add_gate(rx_gate)
     circuit.update_quantum_state(state)
     #print(circuit)
-    print(state._vector)
+    #print(state._vector)
+
+
+def main():
+    batch_size = [1, 10, 100]
+    for b in batch_size:
+        print(f"batch_size: {b}")
+        start = time.time()
+        cnt = MAX_COUNT // b
+        for _ in range(cnt):
+            execute(N, b)
+        print(time.time() - start)
+
 
 main()
 

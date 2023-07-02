@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Optional, Union, cast, Sequence
 from typing_extensions import TypeAlias
 
-#import numpy as np
-import cupy as cp
+import numpy as cp
+#import cupy as cp
 
 StateVectorType: TypeAlias = "npt.NDArray[cp.cfloat]"
 
@@ -34,21 +34,21 @@ class QuantumState:
         qsize = 1
         for i in range(self._dim >> qsize):
             indices = self.indices_vec(i, qubits, masks)
-            print("indices:", indices)
+            #print("indices:", indices)
             values = []
             matrixs = []
-            for _ in range(self._batch_size):
-                v = [self._vector[i][j] for j in indices]
+            for bi in range(self._batch_size):
+                v = [self._vector[bi][j] for j in indices]
                 values.append(v)
                 matrixs.append(matrix.copy())
 
             values = cp.asarray(values)
-            print("values.shape:", values.shape)
+            #print("values.shape:", values.shape)
             matrixs = cp.asarray(matrixs)
-            print("matrixs.shape:", matrixs.shape)
+            #print("matrixs.shape:", matrixs.shape)
 
             new_values = cp.einsum('ijk, ij->ik', matrixs, values)
-            print("new_values.shape:", new_values.shape)
+            #print("new_values.shape:", new_values.shape)
             for bi in range(self._batch_size):
                 for (j, nv) in zip(indices, new_values[bi]):
                     self._vector[bi][j] = nv
