@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, Optional, Union, cast, Sequence
 from typing_extensions import TypeAlias
 
-import numpy as cp
-#import cupy as cp
+#import numpy as cp
+import cupy as cp
 
 StateVectorType: TypeAlias = "npt.NDArray[cp.cfloat]"
 
