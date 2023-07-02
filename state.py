@@ -14,16 +14,16 @@ class QuantumState:
     ) -> None:
         self._dim = 2**n_qubits
         self._batch_size = batch_size
-        datas = []
+        #datas = []
         data = cast(StateVectorType, cp.zeros(self._dim))
         data[0] = 1.0
-        for _ in range(batch_size):
-            datas.append(data.copy())
-        self._vector = cp.asarray(datas)
+        self._vector = []
+        for i in range(batch_size):
+            self._vector.append(data.copy())
 
-    @property
-    def vector(self) -> StateVectorType:
-        return self._vector
+    # @property
+    # def vector(self) -> StateVectorType:
+    #     return self._vector
 
     # TODO: just simple only single qubit and target only!
     def apply(self, targets: int, matrix):
@@ -38,22 +38,20 @@ class QuantumState:
             # TODO: GPUメモリ上で処理したい
             # values = [self.vector[i] for i in indices]
             values = []
-            for _ in range(self._batch_size):
-                v = [self.vector[ii] for ii in indices]
-                values.append(v)
-            # TODO: こんな感じの内包表記にしたい これだと1重のリストになってしまう
-            #values = [self.vector[j][ii] for ii in indices for j in range(self._batch_size)]
-            values = cp.asarray(values)
-            print("values.shape:", values.shape)
-
-            # TODO: matrixの中身
             matrixs = []
             for _ in range(self._batch_size):
+                v = [self._vector[i][ii] for ii in indices]
+                values.append(v)
                 matrixs.append(matrix.copy())
+
+            values = cp.asarray(values)
+            print("values.shape:", values.shape)
             matrixs = cp.asarray(matrixs)
             print("matrixs.shape:", matrixs.shape)
 
-            new_values = matrix.dot(values)
+            #new_values = matrix.dot(values)
+            #new_values = cp.einsum('ijk, ij->ik', matrixs, values)
+            new_values = cp.einsum('ijk, ij->ik', matrixs, values)
             print("new_values.shape:", new_values.shape)
             # for (i, nv) in zip(indices, new_values):
             #     self._vector[i] = nv

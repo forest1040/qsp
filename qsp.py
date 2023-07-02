@@ -13,7 +13,7 @@ def main():
     # ============= 量子状態 =================
     n = 4
     state = QuantumState(n, BATCH_SIZE)
-    print(state.vector)
+    print(state._vector)
 
     # ============= 量子ゲート ===============
     t = random.random() * pi
@@ -25,7 +25,7 @@ def main():
     circuit.add_gate(rx_gate)
     circuit.update_quantum_state(state)
     print(circuit)
-    print(state.vector)
+    print(state._vector)
 
 main()
 
