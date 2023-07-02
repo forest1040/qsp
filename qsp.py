@@ -9,7 +9,7 @@ from gate import RXGate
 from circuit import QuantumCircuit
 
 def main():
-    BATCH_SIZE = 1
+    BATCH_SIZE = 5
     # ============= 量子状態 =================
     n = 4
     state = QuantumState(n, BATCH_SIZE)

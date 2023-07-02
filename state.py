@@ -4,8 +4,6 @@ from typing_extensions import TypeAlias
 #import numpy as cp
 import cupy as cp
 
-StateVectorType: TypeAlias = "npt.NDArray[cp.cfloat]"
-
 class QuantumState:
     def __init__(
         self,
@@ -14,12 +12,15 @@ class QuantumState:
     ) -> None:
         self._dim = 2**n_qubits
         self._batch_size = batch_size
-        data = cast(StateVectorType, cp.zeros(self._dim))
-        data[0] = 1.0
-        datas = []
-        for i in range(batch_size):
-            datas.append(data.copy())
-        self._vector = cp.asarray(datas)
+        self._vector = cp.zeros((batch_size, self._dim,), dtype = "complex_")
+        for i in range(self._batch_size):
+            self._vector[i][0] = 1.0
+        #data[0] = 1.0
+        # datas = []
+        # for i in range(batch_size):
+        #     datas.append(data.copy())
+        # self._vector = cp.asarray(datas)
+        #self._vector = cp.ndarray()
 
     # @property
     # def vector(self) -> StateVectorType:
@@ -34,18 +35,22 @@ class QuantumState:
         qsize = 1
         for i in range(self._dim >> qsize):
             indices = self.indices_vec(i, qubits, masks)
-            #indices = cp.asarray(indices)
+            indices = cp.asarray(indices)
             #print("indices:", indices)
-            values = []
-            matrixs = []
+            #values = []
+            values = cp.zeros((self._batch_size, 2), dtype = "complex_")
+            #matrixs = []
+            matrixs = cp.zeros((self._batch_size, 2, 2), dtype = "complex_")
             for bi in range(self._batch_size):
                 v = [self._vector[bi][j] for j in indices]
-                values.append(v)
-                matrixs.append(matrix.copy())
+                #values.append(v)
+                matrixs[bi] = matrix.copy()
+                values[bi] = cp.array(v)
+                #matrixs.append(matrix.copy())
 
-            values = cp.asarray(values)
+            #values = cp.asarray(values)
             #print("values.shape:", values.shape)
-            matrixs = cp.asarray(matrixs)
+            #matrixs = cp.asarray(matrixs)
             #print("matrixs.shape:", matrixs.shape)
 
             new_values = cp.einsum('ijk, ij->ik', matrixs, values)

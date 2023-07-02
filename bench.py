@@ -29,7 +29,7 @@ def execute(n: int, batch_size: int):
 def main():
     #batch_size = [1, 10, 100, 1000]
     #batch_size = [100, 1000, 10000]
-    batch_size = [10, 100, 1000]
+    batch_size = [100, 1000]
     for b in batch_size:
         #print(f"batch_size: {b}")
         start = time.time()
