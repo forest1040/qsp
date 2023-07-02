@@ -35,12 +35,10 @@ class QuantumState:
         for i in range(self._dim >> qsize):
             indices = self.indices_vec(i, qubits, masks)
             print("indices:", indices)
-            # TODO: GPUメモリ上で処理したい
-            # values = [self.vector[i] for i in indices]
             values = []
             matrixs = []
             for _ in range(self._batch_size):
-                v = [self._vector[i][ii] for ii in indices]
+                v = [self._vector[i][j] for j in indices]
                 values.append(v)
                 matrixs.append(matrix.copy())
 
@@ -49,12 +47,11 @@ class QuantumState:
             matrixs = cp.asarray(matrixs)
             print("matrixs.shape:", matrixs.shape)
 
-            #new_values = matrix.dot(values)
-            #new_values = cp.einsum('ijk, ij->ik', matrixs, values)
             new_values = cp.einsum('ijk, ij->ik', matrixs, values)
             print("new_values.shape:", new_values.shape)
-            # for (i, nv) in zip(indices, new_values):
-            #     self._vector[i] = nv
+            for bi in range(self._batch_size):
+                for (j, nv) in zip(indices, new_values[bi]):
+                    self._vector[bi][j] = nv
 
     def mask_vec(self, qubits: Sequence[int]):
         # only 1 qubit

@@ -16,7 +16,8 @@ def main():
     print(state._vector)
 
     # ============= 量子ゲート ===============
-    t = random.random() * pi
+    #t = random.random() * pi
+    t = pi/2
     rx_gate = RXGate(0, t)
     print(rx_gate)
 
