@@ -15,17 +15,7 @@ DEPTH = 10
 N = 4
 
 def execute(n: int, batch_size: int):
-    # ============= 量子状態 =================
     state = QuantumState(n, batch_size)
-    #print(state._vector)
-
-    # ============= 量子ゲート ===============
-    #t = random.random() * pi
-    t = pi/2
-    rx_gate = RXGate(0, t)
-    #print(rx_gate)
-
-    # ============= 量子回路 =================
     circuit = QuantumCircuit(n)
     for _ in range(DEPTH):
         for i in range(n):
@@ -35,7 +25,6 @@ def execute(n: int, batch_size: int):
     circuit.update_quantum_state(state)
     #print(circuit)
     #print(state._vector)
-
 
 def main():
     #batch_size = [1, 10, 100, 1000]
