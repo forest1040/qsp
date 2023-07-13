@@ -13,9 +13,17 @@ class QuantumState:
     ) -> None:
         self._dim = 2**n_qubits
         self._vector: StateVectorType
+        self.n_qubits = n_qubits
         if vector is None:
             self._vector = cast(StateVectorType, np.zeros(self._dim))
             self._vector[0] = 1.0
+            self._vector[1] = 2.0
+            self._vector[2] = 3.0
+            self._vector[3] = 4.0
+            self._vector[4] = 5.0
+            self._vector[5] = 6.0
+            self._vector[6] = 7.0
+            self._vector[7] = 8.0
         else:
             vector = np.asarray(vector, dtype=np.cfloat)
             if len(vector) != self._dim:
@@ -39,21 +47,25 @@ class QuantumState:
             for (i, nv) in zip(indices, new_values):
                 self._vector[i] = nv
 
-    def apply_controle_gate(self, targets: int, controle: int, matrix):
-        if targets == controle:
-            raise ValueError("target and controle must be different")
-        qubits = []
-        qubits.append(targets)
-        qubits.append(controle)
-        qubits.sort()
-        masks = self.mask_vec(qubits)
-        qsize = 2
-        for i in range(self._dim >> qsize):
-            indices = self.indices_vec(i, qubits, masks)
-            values = [self.vector[i] for i in indices]
-            new_values = matrix.dot(values)
-            for (i, nv) in zip(indices, new_values):
-                self._vector[i] = nv
+    def apply_cnot_gate(self, n, control: int, target: int):
+        if target == control:
+            return
+        higher_mask = 0
+        middle_mask = 0
+        lower_mask = 0
+        if target > control:
+            higher_mask = (1 << (n-2)) - (1 << (target-1))
+            middle_mask = (1 << (target-1)) - (1 << control)
+            lower_mask = (1 << control) - 1
+        else:
+            higher_mask = (1 << (n-2)) - (1 << (control-1))
+            middle_mask = (1 << (control-1)) - (1 << target)
+            lower_mask = (1 << target) - 1
+        for it in range(1 << (n-2)):
+            i = ((it & higher_mask) << 2) | ((it & middle_mask) << 1) | (it & lower_mask) | (1 << control)
+            j = i | (1 << target)
+            # print(f'n:{n}, it: {it}, i: {i}, j: {j}')
+            self._vector[i], self._vector[j] = self._vector[j], self._vector[i]
 
     def apply_swap_gate(self, target1: int, target2, matrix):
         if target1 == target2:

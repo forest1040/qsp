@@ -20,17 +20,17 @@ def main():
 
     # ============= 量子ゲート ===============
     rx_gate = RXGate(0, pi)
-    cnot_gate = CNOTGate(0, 1)
+    cnot_gate = CNOTGate(0, 2)
 
     # ============= 量子回路 =================
     circuit = QuantumCircuit(n)
-    circuit.add_gate(rx_gate)
-    circuit.update_quantum_state(state1)
+    # circuit.add_gate(rx_gate)
+    # circuit.update_quantum_state(state1)
     circuit.add_gate(cnot_gate)
     circuit.update_quantum_state(state2)
     print(circuit)
     print(f'state0: {state0.vector}')
-    print(f'state1: {state1.vector}')
+    # print(f'state1: {state1.vector}')
     print(f'state2: {state2.vector}')
 
 main()

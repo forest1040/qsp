@@ -28,7 +28,7 @@ class OneQubitGate(Gate):
         return 1
     
 class TwoQubitGate(Gate):
-    u_params: Optional[Tuple[float, float, float, float, float, float]]
+    u_params: Optional[Tuple[float, float, float, float]]
 
     @property
     def n_qargs(self) -> int:
@@ -96,7 +96,7 @@ class CNOTGate(TwoQubitGate):
                          [0.0, 0.0, 1.0, 0.0]], dtype=complex)
 
     def update_quantum_state(self, state: QuantumState):
-        state.apply_controle_gate(self.targets, self.controls, self.matrix())
+        state.apply_cnot_gate(state.n_qubits, self.controls, self.targets)
 
 class SWAPGate(TwoQubitGate):
         """SWAP gate"""
