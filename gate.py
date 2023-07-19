@@ -68,6 +68,32 @@ class RXGate(OneQubitGate):
     def update_quantum_state(self, state: QuantumState):
         state.apply(self.targets, self.matrix())
 
+class HGate(OneQubitGate):
+    """Hadamard gate"""
+    lowername = "h"
+
+    def __init__(self, targets: int):
+        self.targets = targets
+        self.u_params = None
+
+    @classmethod
+    def create(cls,
+               targets: int,
+               params: tuple,
+               options: Optional[dict] = None) -> 'HGate':
+        if options:
+            raise ValueError(f"{cls.__name__} doesn't take options")
+        return cls(targets)
+
+    def dagger(self):
+        return HGate(self.targets)
+
+    def matrix(self):
+        return np.array([[1.0, 1.0], [1.0, -1.0]], dtype=complex) / math.sqrt(2.0)
+
+    def update_quantum_state(self, state: QuantumState):
+        state.apply(self.targets, self.matrix())
+
 class CNOTGate(TwoQubitGate):
     """Controlled-NOT gate"""
     lowername = "cnot"
@@ -96,14 +122,14 @@ class CNOTGate(TwoQubitGate):
                          [0.0, 0.0, 1.0, 0.0]], dtype=complex)
 
     def update_quantum_state(self, state: QuantumState):
-        state.apply_cnot_gate(state.n_qubits, self.controls, self.targets)
+        state.apply_cnot_gate(self.controls, self.targets)
 
 class SWAPGate(TwoQubitGate):
         """SWAP gate"""
         lowername = "swap"
 
-        def __init__(self, targets: Tuple[int, int]):
-            self.targets = targets
+        def __init__(self, target1, target2):
+            self.targets = tuple(sorted([target1, target2]))
             self.u_params = None
 
         @classmethod
@@ -125,4 +151,29 @@ class SWAPGate(TwoQubitGate):
                              [0.0, 0.0, 0.0, 1.0]], dtype=complex)
 
         def update_quantum_state(self, state: QuantumState):
-            state.apply(self.targets[0], self.targets[1], self.matrix())
+            state.apply_swap_gate(self.targets[0], self.targets[1])
+
+class DenseMatrix(OneQubitGate):
+    """Gate with a dense matrix"""
+    def __init__(self, target_list: list[int], matrix: np.ndarray):
+        self.target_list = target_list
+        self._matrix = matrix
+        self.u_params = None
+
+    @classmethod
+    def create(cls,
+               target_list: list[int],
+               params: tuple,
+               options: Optional[dict] = None) -> 'DenseMatrix':
+        if options:
+            raise ValueError(f"{cls.__name__} doesn't take options")
+        return cls(target_list, params[0])
+
+    def dagger(self):
+        return DenseMatrix(self.target_list, self.matrix().conj().T)
+
+    def matrix(self):
+        return self._matrix
+
+    def update_quantum_state(self, state: QuantumState):
+        state.apply_densematrix(self.target_list, self.matrix())
