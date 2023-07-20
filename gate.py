@@ -124,35 +124,6 @@ class CNOTGate(TwoQubitGate):
     def update_quantum_state(self, state: QuantumState):
         state.apply_cnot_gate(self.controls, self.targets)
 
-class SWAPGate(TwoQubitGate):
-        """SWAP gate"""
-        lowername = "swap"
-
-        def __init__(self, target1, target2):
-            self.targets = tuple(sorted([target1, target2]))
-            self.u_params = None
-
-        @classmethod
-        def create(cls,
-                   targets: int,
-                   params: tuple,
-                   options: Optional[dict] = None) -> 'SWAPGate':
-            if options:
-                raise ValueError(f"{cls.__name__} doesn't take options")
-            return cls(targets)
-
-        def dagger(self):
-            return SWAPGate(self.targets)
-
-        def matrix(self):
-            return np.array([[1.0, 0.0, 0.0, 0.0],
-                             [0.0, 0.0, 1.0, 0.0],
-                             [0.0, 1.0, 0.0, 0.0],
-                             [0.0, 0.0, 0.0, 1.0]], dtype=complex)
-
-        def update_quantum_state(self, state: QuantumState):
-            state.apply_swap_gate(self.targets[0], self.targets[1])
-
 class DenseMatrix(OneQubitGate):
     """Gate with a dense matrix"""
     def __init__(self, target_list: list[int], matrix: np.ndarray):

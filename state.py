@@ -83,22 +83,6 @@ class QuantumState:
             j = i | (1 << target)
             self._vector[i], self._vector[j] = self._vector[j], self._vector[i]
 
-    def apply_swap_gate(self, target1: int, target2: int):
-        if target1 == target2:
-            return
-        if target1 > target2:
-            target1, target2 = target2, target1
-        mask0 = 1 << target1
-        mask1 = 1 << target2
-        upper_bit_range = 1 << (self.n_qubits - target2 - 1)
-        middle_bit_range = 1 << (target2 - target1 - 1)
-        lower_bit_range = 1 << target1
-        for ub in range(upper_bit_range):
-            for mb in range(middle_bit_range):
-                for lb in range(lower_bit_range):
-                    i = (ub << (target2+1)) | (mb << (target1+1)) | lb
-                    self._vector[i | mask0], self._vector[i | mask1] = self._vector[i | mask1], self._vector[i | mask0]
-
     def apply_densematrix(self, target_list: int, matrix):
         num_target = len(target_list)
         num_outer = self.n_qubits - num_target
